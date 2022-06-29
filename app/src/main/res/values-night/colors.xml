@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="enabled_item_background">#FA8305</color>
+    <color name="disabled_item_background">#A6FA8305</color>
+</resources>
