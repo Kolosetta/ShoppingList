@@ -14,9 +14,8 @@ object ShopListRepositoryImpl: ShopListRepository {
     private var autoIncrementId = 0
 
     init{
+        for(i in 1 until 10)
         addShopItem(ShopItem("lol", 5, true))
-        addShopItem(ShopItem("kek", 2, true))
-        deleteShopItem(getShopItemById(0))
     }
 
     override fun getShopList(): LiveData<List<ShopItem>> {
