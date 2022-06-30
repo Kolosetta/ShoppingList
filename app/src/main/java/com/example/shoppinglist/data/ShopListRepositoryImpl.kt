@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopListRepository
 import java.lang.RuntimeException
+import kotlin.random.Random
 
 object ShopListRepositoryImpl: ShopListRepository {
 
@@ -14,8 +15,8 @@ object ShopListRepositoryImpl: ShopListRepository {
     private var autoIncrementId = 0
 
     init{
-        for(i in 1 until 10)
-        addShopItem(ShopItem("lol", 5, true))
+        for(i in 1 until 100)
+        addShopItem(ShopItem("lol", 5, Random.nextBoolean()))
     }
 
     override fun getShopList(): LiveData<List<ShopItem>> {
@@ -38,7 +39,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     override fun editShopItem(item: ShopItem) {
         val oldItem = getShopItemById(item.id)
         shopList.remove(oldItem)
-        addShopItem(item)
+        addShopItem(item.copy(enabled = !oldItem.enabled))
     }
 
     override fun getShopItemById(shopItemId: Int): ShopItem {
