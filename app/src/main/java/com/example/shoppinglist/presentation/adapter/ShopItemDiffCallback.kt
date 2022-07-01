@@ -1,4 +1,4 @@
-package com.example.shoppinglist.presentation
+package com.example.shoppinglist.presentation.adapter
 
 import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import com.example.shoppinglist.domain.ShopItem
