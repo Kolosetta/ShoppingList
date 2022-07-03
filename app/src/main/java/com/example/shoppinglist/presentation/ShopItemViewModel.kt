@@ -32,7 +32,7 @@ class ShopItemViewModel : ViewModel() {
     private val getShopItemUseCase = GetShopItemUseCase(repository)
 
 
-    fun addShopItem(inputName: String, inputCount: String?) {
+    fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
@@ -47,7 +47,7 @@ class ShopItemViewModel : ViewModel() {
         _shopItem.value = item
     }
 
-    fun editShopItem(inputName: String, inputCount: String?) {
+    fun editShopItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
@@ -65,13 +65,12 @@ class ShopItemViewModel : ViewModel() {
     }
 
     private fun parseCount(inputCount: String?): Int {
-        return if (inputCount?.isDigitsOnly() == true) inputCount.toInt() else 0
-        /*try {
+        return try {
             inputCount?.trim()?.toInt() ?: 0
         }
         catch (e: Exception){
             0
-        }*/
+        }
     }
 
     private fun validateInput(name: String, count: Int): Boolean {
