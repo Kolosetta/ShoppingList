@@ -150,6 +150,7 @@ class ShopItemFragment() : Fragment() {
         private const val ADD_MODE = "add_mode"
         private const val UNKNOWN_MODE = ""
 
+        @JvmStatic
         fun newInstanceAddItem(): ShopItemFragment {
             val bundle = Bundle().apply {
                 putString(SCREEN_MODE, ADD_MODE)
@@ -159,6 +160,7 @@ class ShopItemFragment() : Fragment() {
             }
         }
 
+        @JvmStatic
         fun newInstanceEditItem(itemId: Int): ShopItemFragment {
             val bundle = Bundle().apply {
                 putString(SCREEN_MODE, EDIT_MODE)
