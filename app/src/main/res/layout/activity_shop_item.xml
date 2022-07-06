@@ -3,11 +3,9 @@
     android:id="@+id/shop_item_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.example.shoppinglist.presentation.ShopItemFragment"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presentation.ShopItemActivity"
     tools:layout="@layout/fragment_shop_item">
-
 
 
 </androidx.fragment.app.FragmentContainerView>

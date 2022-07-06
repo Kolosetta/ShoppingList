@@ -17,7 +17,10 @@ import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.RuntimeException
 
-class ShopItemFragment : Fragment() {
+class ShopItemFragment(
+    private val screenMode: String = UNKNOWN_MODE,
+    private val shopItemId: Int = ShopItem.UNDEFINED_ID
+) : Fragment() {
 
     private lateinit var viewModel: ShopItemViewModel
     private lateinit var tilName: TextInputLayout
@@ -31,49 +34,38 @@ class ShopItemFragment : Fragment() {
     }
 
 
-    private var screenMode = UNKNOWN_MODE
-    private var shopItemId = ShopItem.UNDEFINED_ID
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        validateIntent()
+        validateParams()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-        initViews()
-        launchRightMode()
+        initViews(view)
         setupErrorsHandler()
-        viewModel.shouldCloseScreen.observe(this){
-            finish()
+        launchRightMode()
+        viewModel.shouldCloseScreen.observe(viewLifecycleOwner){
+            activity?.onBackPressed()
         }
     }
 
-
-    private fun initViews() {
-        tilName = findViewById(R.id.text_input_layout)
-        tilCount = findViewById(R.id.count_input_layout)
-        editTextName = findViewById(R.id.edit_text_name)
-        editTextCount = findViewById(R.id.edit_text_count)
-        saveBtn = findViewById(R.id.save_button)
+    private fun initViews(view: View) {
+        tilName = view.findViewById(R.id.text_input_layout)
+        tilCount = view.findViewById(R.id.count_input_layout)
+        editTextName = view.findViewById(R.id.edit_text_name)
+        editTextCount = view.findViewById(R.id.edit_text_count)
+        saveBtn = view.findViewById(R.id.save_button)
     }
 
-    private fun validateIntent() {
-        if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
-            throw RuntimeException("Отсутствует параметр EXTRA_SCREEN_MODE в Intent")
+    private fun validateParams() {
+        if (screenMode != EDIT_MODE && screenMode != ADD_MODE) {
+            throw RuntimeException("Некорректный параметр screen_mode")
         }
-        val mode = intent.getStringExtra(EXTRA_SCREEN_MODE)
-        if (mode != ADD_MODE && mode != EDIT_MODE) {
-            throw RuntimeException("Неизвестный screen mode: $mode")
+        if(screenMode == EDIT_MODE && shopItemId == ShopItem.UNDEFINED_ID){
+            throw RuntimeException("Отсутствует параметр EXTRA_ITEM_ID")
         }
-        screenMode = mode
-        if (screenMode == EDIT_MODE) {
-            if (!intent.hasExtra(EXTRA_ITEM_ID)) {
-                throw RuntimeException("Отсутствует параметр EXTRA_ITEM_ID")
-            }
-            shopItemId = intent.getIntExtra(EXTRA_ITEM_ID, ShopItem.UNDEFINED_ID)
-        }
+
     }
 
     private fun setupErrorsHandler(){
-        viewModel.errorInputName.observe(this){
+        viewModel.errorInputName.observe(viewLifecycleOwner){
             when(it){
                 true -> tilName.error = "Необходимо ввести корректное название"
                 false -> tilName.error = null
@@ -90,7 +82,7 @@ class ShopItemFragment : Fragment() {
             }
         })
 
-        viewModel.errorInputCount.observe(this){
+        viewModel.errorInputCount.observe(viewLifecycleOwner){
             when(it){
                 true -> tilCount.error = "Необходимо ввести корректное количество"
                 false -> tilCount.error = null
@@ -110,7 +102,7 @@ class ShopItemFragment : Fragment() {
 
     private fun launchEditMode(){
         viewModel.getShopItemById(shopItemId)
-        viewModel.shopItem.observe(this){
+        viewModel.shopItem.observe(viewLifecycleOwner){
             editTextName.setText(it.name)
             editTextCount.setText(it.count.toString())
         }
@@ -134,23 +126,16 @@ class ShopItemFragment : Fragment() {
     }
 
     companion object {
-        private const val EXTRA_SCREEN_MODE = "mode"
-        private const val EXTRA_ITEM_ID = "item_id"
         private const val EDIT_MODE = "edit_mode"
         private const val ADD_MODE = "add_mode"
         private const val UNKNOWN_MODE = ""
 
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, ADD_MODE)
-            return intent
+        fun newInstanceAddItem(): ShopItemFragment{
+            return ShopItemFragment(ADD_MODE)
         }
 
-        fun newIntentEditItem(context: Context, itemId: Int): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_SCREEN_MODE, EDIT_MODE)
-            intent.putExtra(EXTRA_ITEM_ID, itemId)
-            return intent
+        fun newInstanceEditItem(): ShopItemFragment{
+            return ShopItemFragment(EDIT_MODE)
         }
     }
 }
