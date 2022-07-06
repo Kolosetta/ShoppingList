@@ -17,10 +17,10 @@ import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.RuntimeException
 
-class ShopItemFragment(
-    private val screenMode: String = UNKNOWN_MODE,
-    private val shopItemId: Int = ShopItem.UNDEFINED_ID
-) : Fragment() {
+class ShopItemFragment() : Fragment() {
+
+    private var screenMode: String = UNKNOWN_MODE
+    private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
     private lateinit var viewModel: ShopItemViewModel
     private lateinit var tilName: TextInputLayout
@@ -29,19 +29,27 @@ class ShopItemFragment(
     private lateinit var editTextCount: EditText
     private lateinit var saveBtn: Button
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        validateParams()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
     }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        validateParams()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews(view)
         setupErrorsHandler()
         launchRightMode()
-        viewModel.shouldCloseScreen.observe(viewLifecycleOwner){
+        viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
             activity?.onBackPressed()
         }
     }
@@ -55,18 +63,28 @@ class ShopItemFragment(
     }
 
     private fun validateParams() {
-        if (screenMode != EDIT_MODE && screenMode != ADD_MODE) {
-            throw RuntimeException("Некорректный параметр screen_mode")
+        val args = requireArguments() //Получаем параметры из пришедшего бандла
+        if (!args.containsKey(SCREEN_MODE)) {
+            throw RuntimeException("Отсутствует параметр SCREEN_MODE")
         }
-        if(screenMode == EDIT_MODE && shopItemId == ShopItem.UNDEFINED_ID){
-            throw RuntimeException("Отсутствует параметр EXTRA_ITEM_ID")
+        screenMode = args.getString(SCREEN_MODE).toString()
+
+        if (screenMode != EDIT_MODE && screenMode != ADD_MODE) {
+            throw RuntimeException("Некорректный параметр SCREEN_MODE")
+        }
+
+        if (screenMode == EDIT_MODE) {
+            if (!args.containsKey(ITEM_ID)) {
+                throw RuntimeException("Отсутствует параметр ITEM_ID")
+            }
+            shopItemId = args.getInt(ITEM_ID, ShopItem.UNDEFINED_ID)
         }
 
     }
 
-    private fun setupErrorsHandler(){
-        viewModel.errorInputName.observe(viewLifecycleOwner){
-            when(it){
+    private fun setupErrorsHandler() {
+        viewModel.errorInputName.observe(viewLifecycleOwner) {
+            when (it) {
                 true -> tilName.error = "Необходимо ввести корректное название"
                 false -> tilName.error = null
             }
@@ -82,8 +100,8 @@ class ShopItemFragment(
             }
         })
 
-        viewModel.errorInputCount.observe(viewLifecycleOwner){
-            when(it){
+        viewModel.errorInputCount.observe(viewLifecycleOwner) {
+            when (it) {
                 true -> tilCount.error = "Необходимо ввести корректное количество"
                 false -> tilCount.error = null
             }
@@ -100,42 +118,55 @@ class ShopItemFragment(
         })
     }
 
-    private fun launchEditMode(){
+    private fun launchEditMode() {
         viewModel.getShopItemById(shopItemId)
-        viewModel.shopItem.observe(viewLifecycleOwner){
+        viewModel.shopItem.observe(viewLifecycleOwner) {
             editTextName.setText(it.name)
             editTextCount.setText(it.count.toString())
         }
 
-        saveBtn.setOnClickListener{
+        saveBtn.setOnClickListener {
             viewModel.editShopItem(editTextName.text?.toString(), editTextCount.text?.toString())
         }
     }
 
-    private fun launchAddMode(){
-        saveBtn.setOnClickListener{
+    private fun launchAddMode() {
+        saveBtn.setOnClickListener {
             viewModel.addShopItem(editTextName.text?.toString(), editTextCount.text?.toString())
         }
     }
 
-    private fun launchRightMode(){
-        when(screenMode){
-            EDIT_MODE -> launchEditMode()
+    private fun launchRightMode() {
+        when (screenMode) {
             ADD_MODE -> launchAddMode()
+            EDIT_MODE -> launchEditMode()
         }
     }
 
     companion object {
+        private const val SCREEN_MODE = "mode"
+        private const val ITEM_ID = "item_id"
         private const val EDIT_MODE = "edit_mode"
         private const val ADD_MODE = "add_mode"
         private const val UNKNOWN_MODE = ""
 
-        fun newInstanceAddItem(): ShopItemFragment{
-            return ShopItemFragment(ADD_MODE)
+        fun newInstanceAddItem(): ShopItemFragment {
+            val bundle = Bundle().apply {
+                putString(SCREEN_MODE, ADD_MODE)
+            }
+            return ShopItemFragment().apply {
+                arguments = bundle
+            }
         }
 
-        fun newInstanceEditItem(): ShopItemFragment{
-            return ShopItemFragment(EDIT_MODE)
+        fun newInstanceEditItem(itemId: Int): ShopItemFragment {
+            val bundle = Bundle().apply {
+                putString(SCREEN_MODE, EDIT_MODE)
+                putInt(ITEM_ID, itemId)
+            }
+            return ShopItemFragment().apply {
+                arguments = bundle
+            }
         }
     }
 }
