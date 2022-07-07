@@ -12,7 +12,7 @@ class ShopItemViewModel : ViewModel() {
     private val repository = ShopListRepositoryImpl
 
     private val _errorInputName = MutableLiveData<Boolean>()
-    val errorInputName: LiveData<Boolean> //Переменная и геттер для вызова из активити, чтобы не было возможности изменять данные в _errorInputName
+    val errorInputName: LiveData<Boolean> //Переменная и геттер для внешнего вызова из активити, чтобы не было возможности изменять данные в _errorInputName
         get() = _errorInputName
 
     private val _errorInputCount = MutableLiveData<Boolean>()
