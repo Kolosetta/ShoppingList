@@ -31,6 +31,10 @@ class ShopItemViewModel : ViewModel() {
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
 
+    fun getShopItemById(shopItemId: Int) {
+        val item = getShopItemUseCase.getShopItemById(shopItemId)
+        _shopItem.value = item
+    }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
@@ -40,11 +44,6 @@ class ShopItemViewModel : ViewModel() {
             addShopItemUseCase.addShopItem(newItem)
             _shouldCloseScreen.value = Unit
         }
-    }
-
-    fun getShopItemById(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItemById(shopItemId)
-        _shopItem.value = item
     }
 
     fun editShopItem(inputName: String?, inputCount: String?) {

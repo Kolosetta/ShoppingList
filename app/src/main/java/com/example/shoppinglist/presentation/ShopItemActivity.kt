@@ -15,7 +15,7 @@ import com.example.shoppinglist.domain.ShopItem
 import com.google.android.material.textfield.TextInputLayout
 import java.lang.RuntimeException
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
 
     private lateinit var viewModel: ShopItemViewModel
     private var screenMode = UNKNOWN_MODE
@@ -25,19 +25,17 @@ class ShopItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
-        validateIntent()
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
-
-        launchRightMode()
-
-        viewModel.shouldCloseScreen.observe(this){
-            finish()
+        validateIntent()
+        //Создаем фрагмент вручную только при первом запуске активити
+        if(savedInstanceState == null) {
+            launchRightMode()
         }
 
-
+        viewModel.shouldCloseScreen.observe(this){
+            onEditFinished()
+        }
     }
-
-
 
     private fun validateIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
@@ -56,16 +54,14 @@ class ShopItemActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun launchRightMode(){
         val fragment = when(screenMode){
-            EDIT_MODE -> ShopItemFragment.newInstanceEditItem()
+            EDIT_MODE -> ShopItemFragment.newInstanceEditItem(shopItemId)
             ADD_MODE -> ShopItemFragment.newInstanceAddItem()
             else -> throw RuntimeException("Неизвестный тип фрагмента")
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shop_item_container, fragment)
+            .replace(R.id.shop_item_container, fragment)
             .commit()
     }
 
@@ -88,5 +84,9 @@ class ShopItemActivity : AppCompatActivity() {
             intent.putExtra(EXTRA_ITEM_ID, itemId)
             return intent
         }
+    }
+
+    override fun onEditFinished() {
+        finish()
     }
 }

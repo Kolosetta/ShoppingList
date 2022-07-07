@@ -1,10 +1,10 @@
 package com.example.shoppinglist.presentation
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +22,7 @@ class ShopItemFragment() : Fragment() {
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
 
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
     private lateinit var viewModel: ShopItemViewModel
     private lateinit var tilName: TextInputLayout
     private lateinit var tilCount: TextInputLayout
@@ -29,16 +30,23 @@ class ShopItemFragment() : Fragment() {
     private lateinit var editTextCount: EditText
     private lateinit var saveBtn: Button
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        //Если родительская активити реализует OnEditingFinishedListener
+        if(context is OnEditingFinishedListener){
+            onEditingFinishedListener = context
+        }
+        else{
+            throw RuntimeException("Родительская активити фрагмента ${this.javaClass} обязана реализовавать OnEditingFinishedListener")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         validateParams()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_shop_item, container, false)
     }
 
@@ -50,7 +58,8 @@ class ShopItemFragment() : Fragment() {
         setupErrorsHandler()
         launchRightMode()
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            Log.i("Kek", "Вызван shouldCloseScreen")
+            onEditingFinishedListener.onEditFinished()
         }
     }
 
@@ -170,5 +179,9 @@ class ShopItemFragment() : Fragment() {
                 arguments = bundle
             }
         }
+    }
+
+    interface OnEditingFinishedListener{
+        fun onEditFinished()
     }
 }
