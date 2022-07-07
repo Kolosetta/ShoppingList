@@ -70,9 +70,11 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupRecyclerViewListeners(rvShopList: RecyclerView) {
+        //Реализует слушатель длинных кликов, который устанавливается в longClickListener в адаптере
         rvadapter.longClickListener = {
             viewModel.changeEnableState(it)
         }
+        //Реализует слушатель коротких кликов, который устанавливается в longClickListener в адаптере
         rvadapter.clickListener = {
             if (isVerticalMode()) {
                 val intent = ShopItemActivity.newIntentEditItem(this, it.id)
@@ -90,11 +92,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         //Установка слушателей на свайпы через ItemTouchHelper
         val callback = object :
             ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 return false
             }
 
@@ -108,10 +106,11 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         itemTouchHelper.attachToRecyclerView(rvShopList)
     }
 
+    //Определяет положение экрана, по наличию на нем контейнера для фрагментов
     private fun isVerticalMode(): Boolean = shopItemContainer == null
 
+    //Закрывает последний фрагмент в backStack
     override fun onEditFinished() {
         supportFragmentManager.popBackStack()
-        Log.i("Kek", "Вызван shouldCloseScreen in main")
     }
 }

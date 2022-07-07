@@ -27,6 +27,7 @@ class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinished
         setContentView(R.layout.activity_shop_item)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         validateIntent()
+
         //Создаем фрагмент вручную только при первом запуске активити
         if(savedInstanceState == null) {
             launchRightMode()

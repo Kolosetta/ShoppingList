@@ -11,6 +11,7 @@ import java.lang.RuntimeException
 //Также скрывает в себе реализацию самого списка айтемов
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
 
+    //Функции в переменных, которые задаются снаружи, в MainActivity
     var longClickListener: ((ShopItem) -> Unit)? = null
     var clickListener: ((ShopItem) -> Unit)? = null
 
@@ -36,6 +37,7 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
         holder.view.setOnClickListener{
             clickListener?.invoke(shopListItem)
         }
+
     }
 
     override fun getItemViewType(position: Int): Int {
