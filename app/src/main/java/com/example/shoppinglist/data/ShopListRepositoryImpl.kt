@@ -10,10 +10,15 @@ import kotlin.random.Random
 object ShopListRepositoryImpl: ShopListRepository {
 
     //Пока временная реализация через список, вместо БД
-    private val shopList = sortedSetOf<ShopItem>({o1, o2 -> o1.id.compareTo(o2.id)})
+    private val shopList = sortedSetOf<ShopItem>({
+            //Анонимная реализация компаратора, чтобы список был сортированным
+            o1, o2 -> o1.id.compareTo(o2.id)
+    })
+    //Список shopList в контейнере LiveData, чтобы на него можно было подписаться
     private val shopListLD = MutableLiveData<List<ShopItem>>()
     private var autoIncrementId = 0
 
+    //Просто заполнение списка начальными значениями
     init{
         for(i in 1 until 10)
         addShopItem(ShopItem("lol", 5, Random.nextBoolean()))
@@ -24,6 +29,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     }
 
     override fun addShopItem(item: ShopItem) {
+        //Присвоение новому айтему if
         if(item.id == ShopItem.UNDEFINED_ID) {
             item.id = autoIncrementId++
         }
@@ -48,6 +54,7 @@ object ShopListRepositoryImpl: ShopListRepository {
         } ?: throw RuntimeException("Элемент с id $shopItemId не существует")
     }
 
+    //Обновление LiveData версии списка
     private fun updateListLD(){
         shopListLD.value = shopList.toList()
     }

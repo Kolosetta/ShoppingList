@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        shopItemContainer = findViewById(R.id.shop_item_container) //Элемент с этим id будет только в альбомной ориентации
+        shopItemContainer = findViewById(R.id.shop_item_container) //Этот контейнер будет только в альбомной ориентации
         //guideline = findViewById(R.id.middle_guideline)
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
