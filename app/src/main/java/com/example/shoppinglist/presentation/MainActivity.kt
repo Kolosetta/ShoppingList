@@ -71,7 +71,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private fun setupRecyclerViewListeners(rvShopList: RecyclerView) {
         rvadapter.longClickListener = {
-            viewModel.editShopItem(it)
+            viewModel.changeEnableState(it)
         }
         rvadapter.clickListener = {
             if (isVerticalMode()) {
