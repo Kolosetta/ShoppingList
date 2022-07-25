@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.shoppinglist.R
+import com.example.shoppinglist.databinding.ActivityMainBinding
 import com.example.shoppinglist.presentation.adapter.ShopListAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -17,20 +18,19 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private lateinit var viewModel: MainViewModel
     private lateinit var rvadapter: ShopListAdapter
-    private var shopItemContainer: FragmentContainerView? = null
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        shopItemContainer = findViewById(R.id.shop_item_container) //Элемент с этим id будет только в альбомной ориентации
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {
             rvadapter.submitList(it) //Происходит в новом потоке
         }
 
-        val actionBtn = findViewById<FloatingActionButton>(R.id.floating_action_btn)
-        actionBtn.setOnClickListener {
+        binding.floatingActionBtn.setOnClickListener {
             if (isVerticalMode()) {
                 val intent = ShopItemActivity.newIntentAddItem(this)
                 startActivity(intent)
@@ -49,8 +49,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
     }
 
     private fun setupRecyclerView() {
-        val rvShopList = findViewById<RecyclerView>(R.id.shop_recycler_view)
-        with(rvShopList) {
+        with(binding.shopRecyclerView) {
             //Вручную задаем размер пула холдеров для каждого типа view, чтобы всегда оставались свободные под отрисовку
             recycledViewPool.setMaxRecycledViews(
                 ShopListAdapter.VIEW_TYPE_ENABLED,
@@ -62,8 +61,9 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
             )
             rvadapter = ShopListAdapter()
             adapter = rvadapter
+            setupRecyclerViewListeners(this)
         }
-        setupRecyclerViewListeners(rvShopList)
+
     }
 
     private fun setupRecyclerViewListeners(rvShopList: RecyclerView) {
@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         itemTouchHelper.attachToRecyclerView(rvShopList)
     }
 
-    private fun isVerticalMode(): Boolean = shopItemContainer == null
+    private fun isVerticalMode(): Boolean = binding.shopItemContainer == null //Этот элемент существует только в альбомной ориентации
 
     override fun onEditFinished() {
         supportFragmentManager.popBackStack()
