@@ -17,14 +17,12 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
 
     private lateinit var viewModel: MainViewModel
     private lateinit var rvadapter: ShopListAdapter
-   // private lateinit var guideline: Guideline
     private var shopItemContainer: FragmentContainerView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         shopItemContainer = findViewById(R.id.shop_item_container) //Элемент с этим id будет только в альбомной ориентации
-        //guideline = findViewById(R.id.middle_guideline)
         setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {
@@ -38,7 +36,6 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
                 startActivity(intent)
 
             } else {
-                //guideline.setGuidelinePercent(0.5f)
                 supportFragmentManager.popBackStack()
                 val fragment = ShopItemFragment.newInstanceAddItem()
                 supportFragmentManager
