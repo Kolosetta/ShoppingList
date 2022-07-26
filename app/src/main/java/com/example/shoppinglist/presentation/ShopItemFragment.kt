@@ -52,6 +52,8 @@ class ShopItemFragment() : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         setupErrorsHandler()
         launchRightMode()
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
@@ -117,10 +119,6 @@ class ShopItemFragment() : Fragment() {
 
     private fun launchEditMode() {
         viewModel.getShopItemById(shopItemId)
-        viewModel.shopItem.observe(viewLifecycleOwner) {
-            binding.editTextName.setText(it.name)
-            binding.editTextCount.setText(it.count.toString())
-        }
 
         binding.saveButton.setOnClickListener {
             viewModel.editShopItem(binding.editTextName.text?.toString(), binding.editTextCount.text?.toString())
