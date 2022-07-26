@@ -24,8 +24,8 @@ class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedList
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        setupRecyclerView()
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        setupRecyclerView()
         viewModel.shopList.observe(this) {
             rvadapter.submitList(it) //Происходит в новом потоке
         }
