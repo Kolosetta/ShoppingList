@@ -82,13 +82,6 @@ class ShopItemFragment() : Fragment() {
     }
 
     private fun setupErrorsHandler() {
-        viewModel.errorInputName.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.textInputLayout.error = "Необходимо ввести корректное название"
-                false -> binding.textInputLayout.error = null
-            }
-        }
-
         binding.editTextName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
@@ -98,13 +91,6 @@ class ShopItemFragment() : Fragment() {
                 viewModel.resetErrorInputName()
             }
         })
-
-        viewModel.errorInputCount.observe(viewLifecycleOwner) {
-            when (it) {
-                true -> binding.countInputLayout.error = "Необходимо ввести корректное количество"
-                false ->binding.countInputLayout.error = null
-            }
-        }
 
         binding.editTextCount.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}

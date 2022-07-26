@@ -4,4 +4,6 @@
     <string name="input_field_header">Name:</string>
     <string name="edit_text_count_title">Count:</string>
     <string name="save_button_title">Сохранить</string>
+    <string name="need_correct_name">Необходимо ввести корректное название</string>
+    <string name="need_correct_count">Необходимо ввести корректное количество</string>
 </resources>
