@@ -56,7 +56,6 @@ class ShopItemViewModel : ViewModel() {
                 _shouldCloseScreen.value = Unit
             }
         }
-
     }
 
     private fun parseName(inputName: String?): String {

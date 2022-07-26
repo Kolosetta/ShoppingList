@@ -4,21 +4,16 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.shoppinglist.R
 import com.example.shoppinglist.databinding.FragmentShopItemBinding
 import com.example.shoppinglist.domain.ShopItem
-import com.google.android.material.textfield.TextInputLayout
 import java.lang.RuntimeException
 
-class ShopItemFragment() : Fragment() {
+class ShopItemFragment : Fragment() {
 
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
@@ -47,7 +42,6 @@ class ShopItemFragment() : Fragment() {
         binding = FragmentShopItemBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -78,7 +72,6 @@ class ShopItemFragment() : Fragment() {
             }
             shopItemId = args.getInt(ITEM_ID, ShopItem.UNDEFINED_ID)
         }
-
     }
 
     private fun setupErrorsHandler() {
@@ -105,7 +98,6 @@ class ShopItemFragment() : Fragment() {
 
     private fun launchEditMode() {
         viewModel.getShopItemById(shopItemId)
-
         binding.saveButton.setOnClickListener {
             viewModel.editShopItem(binding.editTextName.text?.toString(), binding.editTextCount.text?.toString())
         }
