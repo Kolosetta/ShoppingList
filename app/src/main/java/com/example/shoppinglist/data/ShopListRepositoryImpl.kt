@@ -2,20 +2,28 @@ package com.example.shoppinglist.data
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.example.shoppinglist.data.database.AppDataBase
 import com.example.shoppinglist.domain.ShopItem
 import com.example.shoppinglist.domain.ShopListRepository
 import java.lang.RuntimeException
 
-class ShopListRepositoryImpl(application: Application): ShopListRepository {
+class ShopListRepositoryImpl(application: Application) : ShopListRepository {
 
     private val shopListDao = AppDataBase.getInstance(application).shopListDao()
     private val mapper = ShopListMapper()
 
-    override fun getShopList(): LiveData<List<ShopItem>> {
-        
-    }
+    override fun getShopList(): LiveData<List<ShopItem>> =
+        /*MediatorLiveData<List<ShopItem>>().apply{
+            addSource(shopListDao.getShopList()) {
+                value = mapper.mapListDbModelToListEntity(it)
+            }
+        }*/
+        Transformations.map(shopListDao.getShopList()) {
+            mapper.mapListDbModelToListEntity(it)
+        }
 
     override fun addShopItem(item: ShopItem) {
         val dbItem = mapper.mapEntityToDbModel(item)
