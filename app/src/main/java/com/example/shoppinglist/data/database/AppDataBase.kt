@@ -1,4 +1,4 @@
-package com.example.shoppinglist.data
+package com.example.shoppinglist.data.database
 
 import android.app.Application
 import androidx.room.Database
@@ -15,7 +15,7 @@ abstract class AppDataBase : RoomDatabase() {
         private val LOCK = Any()
         private const val DB_NAME = "shop_item.db"
 
-        fun getInstance(application: Application) : AppDataBase{
+        fun getInstance(application: Application) : AppDataBase {
             INSTANCE?.let{
                 return it
             }
