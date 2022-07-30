@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist.data.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.*
+import kotlinx.coroutines.*
 
 class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -33,18 +34,24 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
 
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+
     fun getShopItemById(shopItemId: Int) {
-        val item = getShopItemUseCase.getShopItemById(shopItemId)
-        _shopItem.value = item
+        coroutineScope.launch {
+            val item = getShopItemUseCase.getShopItemById(shopItemId)
+            _shopItem.value = item
+        }
     }
 
     fun addShopItem(inputName: String?, inputCount: String?) {
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
-            val newItem = ShopItem(name, count, true)
-            addShopItemUseCase.addShopItem(newItem)
-            _shouldCloseScreen.value = Unit
+            coroutineScope.launch {
+                val newItem = ShopItem(name, count, true)
+                addShopItemUseCase.addShopItem(newItem)
+                _shouldCloseScreen.value = Unit
+            }
         }
     }
 
@@ -53,9 +60,11 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
             _shopItem.value?.let {
-                val item = it.copy(name = name, count = count, enabled = it.enabled, id = it.id)
-                editShopItemUseCase.editShopItem(item)
-                _shouldCloseScreen.value = Unit
+                coroutineScope.launch {
+                    val item = it.copy(name = name, count = count, enabled = it.enabled, id = it.id)
+                    editShopItemUseCase.editShopItem(item)
+                    _shouldCloseScreen.value = Unit
+                }
             }
         }
     }
@@ -93,5 +102,10 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
 
     fun resetErrorInputCount() {
         _errorInputCount.value = false
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        coroutineScope.cancel()
     }
 }

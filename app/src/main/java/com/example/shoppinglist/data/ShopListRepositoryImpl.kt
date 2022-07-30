@@ -25,22 +25,22 @@ class ShopListRepositoryImpl(application: Application) : ShopListRepository {
             mapper.mapListDbModelToListEntity(it)
         }
 
-    override fun addShopItem(item: ShopItem) {
+    override suspend fun addShopItem(item: ShopItem) {
         val dbItem = mapper.mapEntityToDbModel(item)
         shopListDao.addShopItem(dbItem)
     }
 
-    override fun deleteShopItem(item: ShopItem) {
+    override suspend fun deleteShopItem(item: ShopItem) {
         shopListDao.deleteShopItem(item.id)
     }
 
-    override fun editShopItem(item: ShopItem) {
+    override suspend fun editShopItem(item: ShopItem) {
         //Скопирована реализация addShopItem, потому что при добавлении элемент заменить существующий
         val dbItem = mapper.mapEntityToDbModel(item)
         shopListDao.addShopItem(dbItem)
     }
 
-    override fun getShopItemById(shopItemId: Int): ShopItem {
+    override suspend fun getShopItemById(shopItemId: Int): ShopItem {
         val dbItem = shopListDao.getShopItem(shopItemId)
         return mapper.mapDbModelToEntity(dbItem)
     }
