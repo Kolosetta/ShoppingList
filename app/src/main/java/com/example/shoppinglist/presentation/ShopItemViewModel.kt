@@ -1,11 +1,7 @@
 package com.example.shoppinglist.presentation
 
 import android.app.Application
-import androidx.core.text.isDigitsOnly
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.example.shoppinglist.data.ShopListRepositoryImpl
 import com.example.shoppinglist.domain.*
 import kotlinx.coroutines.*
@@ -34,10 +30,8 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
 
-    private val coroutineScope = CoroutineScope(Dispatchers.IO)
-
     fun getShopItemById(shopItemId: Int) {
-        coroutineScope.launch {
+        viewModelScope.launch {
             val item = getShopItemUseCase.getShopItemById(shopItemId)
             _shopItem.value = item
         }
@@ -47,7 +41,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val name = parseName(inputName)
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
-            coroutineScope.launch {
+            viewModelScope.launch {
                 val newItem = ShopItem(name, count, true)
                 addShopItemUseCase.addShopItem(newItem)
                 _shouldCloseScreen.value = Unit
@@ -60,7 +54,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val count = parseCount(inputCount)
         if (validateInput(name, count)) {
             _shopItem.value?.let {
-                coroutineScope.launch {
+                viewModelScope.launch {
                     val item = it.copy(name = name, count = count, enabled = it.enabled, id = it.id)
                     editShopItemUseCase.editShopItem(item)
                     _shouldCloseScreen.value = Unit
@@ -102,10 +96,5 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
 
     fun resetErrorInputCount() {
         _errorInputCount.value = false
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        coroutineScope.cancel()
     }
 }
